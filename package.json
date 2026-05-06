@@ -1,0 +1,37 @@
+{
+  "name": "online-store-01",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Digital PDF bookstore — MERN monorepo (backend, buyer-app, admin-app, e2e).",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "workspaces": [
+    "backend",
+    "buyer-app",
+    "admin-app",
+    "e2e"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "test:backend": "npm run test --workspace backend",
+    "test:buyer": "npm run test --workspace buyer-app",
+    "test:admin": "npm run test --workspace admin-app",
+    "test:e2e": "npm run test --workspace e2e",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.0.0",
+    "eslint": "^10.3.0",
+    "globals": "^15.14.0",
+    "jiti": "^2.4.2",
+    "prettier": "^3.8.3",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.25.0"
+  }
+}
