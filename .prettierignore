@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.cache/
+.next/
+.nuxt/
+
+# Coverage / test output
+coverage/
+playwright-report/
+test-results/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Reference material — not part of the build
+mock_ui/
+docs/
+
+# Tooling
+.cursor/
+.claude/
