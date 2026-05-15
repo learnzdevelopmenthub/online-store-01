@@ -1,0 +1,104 @@
+name: E2E
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ping:1})' --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: '5000'
+      MONGODB_URI: mongodb://localhost:27017/online-store-01-test
+      JWT_PRIVATE_KEY: ${{ secrets.E2E_JWT_PRIVATE_KEY || 'placeholder' }}
+      JWT_PUBLIC_KEY: ${{ secrets.E2E_JWT_PUBLIC_KEY || 'placeholder' }}
+      REFRESH_TOKEN_SECRET: ${{ secrets.E2E_REFRESH_TOKEN_SECRET || 'placeholder-refresh' }}
+      GOOGLE_CLIENT_ID: ${{ secrets.E2E_GOOGLE_CLIENT_ID || 'placeholder-google' }}
+      RAZORPAY_KEY_ID: ${{ secrets.E2E_RAZORPAY_KEY_ID || 'placeholder-rzp-id' }}
+      RAZORPAY_KEY_SECRET: ${{ secrets.E2E_RAZORPAY_KEY_SECRET || 'placeholder-rzp-secret' }}
+      RAZORPAY_WEBHOOK_SECRET: ${{ secrets.E2E_RAZORPAY_WEBHOOK_SECRET || 'placeholder-rzp-webhook' }}
+      R2_ACCOUNT_ID: ${{ secrets.E2E_R2_ACCOUNT_ID || 'placeholder' }}
+      R2_ACCESS_KEY_ID: ${{ secrets.E2E_R2_ACCESS_KEY_ID || 'placeholder' }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.E2E_R2_SECRET_ACCESS_KEY || 'placeholder' }}
+      R2_PUBLIC_BUCKET: books-public-test
+      R2_PRIVATE_BUCKET: books-private-test
+      R2_PUBLIC_URL: https://cdn.example.com
+      ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL || 'admin@example.com' }}
+      ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD || 'placeholder-pw' }}
+      CORS_ORIGIN: http://localhost:5173,http://localhost:5174
+      VITE_API_URL: http://localhost:5000
+      VITE_GOOGLE_CLIENT_ID: ${{ secrets.E2E_VITE_GOOGLE_CLIENT_ID || 'placeholder-google' }}
+      VITE_RAZORPAY_KEY: ${{ secrets.E2E_VITE_RAZORPAY_KEY || 'placeholder-rzp' }}
+      VITE_BUYER_URL: http://localhost:5173
+      VITE_ADMIN_URL: http://localhost:5174
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package-lock.json', 'package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+        working-directory: e2e
+
+      - name: Build all workspaces
+        run: npm run build --workspaces --if-present
+
+      - name: Start backend
+        run: node dist/index.js &
+        working-directory: backend
+
+      - name: Start buyer-app
+        run: npx vite preview --port 5173 --host &
+        working-directory: buyer-app
+
+      - name: Start admin-app
+        run: npx vite preview --port 5174 --host &
+        working-directory: admin-app
+
+      - name: Wait for servers
+        run: npx wait-on tcp:5000 http://127.0.0.1:5173 http://127.0.0.1:5174 -t 60000
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
