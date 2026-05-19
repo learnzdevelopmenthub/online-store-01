@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: builder
+    command: npm run dev --workspace=@store/backend
+    environment:
+      NODE_ENV: development
+      # Inotify events don't cross host→container on Docker Desktop for Windows
+      # (WSL2 bind mounts). Polling is the canonical workaround for nodemon's
+      # underlying chokidar watcher.
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ./backend/nodemon.json:/app/backend/nodemon.json
+      - ./backend/tsconfig.json:/app/backend/tsconfig.json
+      - ./backend/tsconfig.build.json:/app/backend/tsconfig.build.json

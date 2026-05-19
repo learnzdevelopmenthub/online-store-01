@@ -1,0 +1,72 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: store-mongo
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: store-backend
+    env_file:
+      - .env.docker
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/online-store-01
+      PORT: "5000"
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  buyer-app:
+    build:
+      context: .
+      dockerfile: buyer-app/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5000
+    container_name: store-buyer
+    ports:
+      - "3000:8080"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  admin-app:
+    build:
+      context: .
+      dockerfile: admin-app/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5000
+    container_name: store-admin
+    ports:
+      - "3001:8080"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
