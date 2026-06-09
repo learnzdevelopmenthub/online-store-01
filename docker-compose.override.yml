@@ -5,6 +5,8 @@ services:
       dockerfile: backend/Dockerfile
       target: builder
     command: npm run dev --workspace=@store/backend
+    env_file:
+      - .env.docker
     environment:
       NODE_ENV: development
       # Inotify events don't cross host→container on Docker Desktop for Windows
