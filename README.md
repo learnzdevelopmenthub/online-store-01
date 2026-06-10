@@ -71,6 +71,20 @@ docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
 - `VITE_API_URL` defaults to the VPS IP (`http://69.30.250.67:5000`). Override it without editing any file by exporting it before the command — at M4 this becomes the HTTPS domain, e.g. `VITE_API_URL=https://api.staging.yourdomain.com docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build`.
 - The `env_file` lives in the per-environment overlays, not the base: dev's [`docker-compose.override.yml`](docker-compose.override.yml) supplies `.env.docker`, staging supplies `.env.production`. The base [`docker-compose.yml`](docker-compose.yml) is environment-neutral.
 
+### Releasing / production deploy
+
+Deploys are triggered by **pushing a version tag**, not by merging to `main`. The [`Deploy`](.github/workflows/deploy.yml) workflow re-runs lint + unit tests and, only if green, SSHes to the VPS, checks out the tagged commit, rebuilds the staging stack, and smoke-tests `/health`.
+
+```bash
+# from main, after your change is merged:
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+- Tags must match `v*.*.*` (e.g. `v1.0.0`) and be cut from a `main` commit that already includes `deploy.yml`.
+- The VPS checks out the exact tag, so a release is reproducible and a rollback is just re-tagging an older commit.
+- Requires repo secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY` (a dedicated CD keypair whose public half is in the `deploy` user's `~/.ssh/authorized_keys`).
+
 ### Working on the frontends
 
 Compose runs the production nginx build for both SPAs — there is no in-compose hot-reload for the frontends. For Vite HMR, run dev natively on the host:

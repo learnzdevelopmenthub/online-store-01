@@ -1,0 +1,77 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # release tags only, e.g. v1.0.0
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false # never interrupt an in-flight production deploy
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run lint
+
+  test:
+    name: test (${{ matrix.workspace }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: [backend, buyer-app, admin-app]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run test:coverage --workspace ${{ matrix.workspace }}
+
+  deploy:
+    name: deploy
+    needs: [lint, test] # only ship if the CI re-run is green
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Deploy released tag to VPS
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/online-store-01
+            git fetch --all --tags --prune
+            # Deploy the exact released commit (detached HEAD), not whatever main HEAD is.
+            git checkout --force ${{ github.ref_name }}
+            docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
+            docker compose -f docker-compose.yml -f docker-compose.staging.yml ps
+            # Smoke test on the box; retry while the backend container warms up.
+            for i in $(seq 1 12); do
+              if curl -fsS http://localhost:5000/health; then echo "OK"; exit 0; fi
+              echo "waiting for backend ($i)"; sleep 5
+            done
+            echo "health check failed after deploy"; exit 1
