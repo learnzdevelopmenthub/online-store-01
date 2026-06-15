@@ -7,6 +7,7 @@ export default mergeConfig(
     test: {
       environment: 'happy-dom',
       globals: false,
+      env: { VITE_API_URL: 'http://localhost:5000' },
       include: ['__tests__/**/*.test.{ts,tsx}'],
       setupFiles: ['./__tests__/setup.ts'],
       clearMocks: true,
