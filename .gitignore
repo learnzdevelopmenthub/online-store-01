@@ -19,6 +19,7 @@ out/
 !.env.docker.example
 *.pem
 *.key
+secrets/
 
 # Logs
 logs/

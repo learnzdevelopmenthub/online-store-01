@@ -45,6 +45,22 @@ describe('POST /api/auth/register', () => {
       .send({ ...VALID, password: 'short' });
     expect(res.status).toBe(400);
   });
+
+  it('allows multiple password accounts to coexist (googleId null is not unique)', async () => {
+    // Regression: a plain sparse+unique index on googleId still indexes explicit
+    // nulls (the schema default), so the second password account would collide on
+    // null and 409. A partial index (unique only when googleId is a string) fixes
+    // it. init() guarantees the unique index is actually built before we register.
+    await User.init();
+    const first = await request(app)
+      .post('/api/auth/register')
+      .send({ fullName: 'First', email: 'first@example.com', password: 'password123' });
+    const second = await request(app)
+      .post('/api/auth/register')
+      .send({ fullName: 'Second', email: 'second@example.com', password: 'password123' });
+    expect(first.status).toBe(201);
+    expect(second.status).toBe(201);
+  });
 });
 
 describe('POST /api/auth/login', () => {
