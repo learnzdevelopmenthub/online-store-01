@@ -9,8 +9,10 @@ import { loginSchema, registerSchema } from '../schemas/auth.schema.js';
 
 export const authRouter = Router();
 
-// Rate limiter disabled under test so it doesn't bleed across cases (tested in isolation).
-if (!env.isTest) {
+// Rate limiter only in production. Disabled in test (so it doesn't bleed across
+// cases — tested in isolation) and in development (the SPA refreshes on every
+// mount, which would otherwise drain the 10/15min budget during normal local use).
+if (env.isProd) {
   authRouter.use(authRateLimiter());
 }
 
