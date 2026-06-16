@@ -20,7 +20,14 @@ const userSchema = new Schema<IUser>(
     fullName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, default: null },
-    googleId: { type: String, default: null, unique: true, sparse: true },
+    // Unique only among accounts that actually have a googleId. A plain `sparse`
+    // index still indexes explicit `null`s (the schema default), so every
+    // password account would collide on null — use a partial filter on string type.
+    googleId: {
+      type: String,
+      default: null,
+      index: { unique: true, partialFilterExpression: { googleId: { $type: 'string' } } },
+    },
     avatar: { type: String, default: null },
     role: { type: String, enum: ['buyer', 'admin'], default: 'buyer' },
     isActive: { type: Boolean, default: true },
