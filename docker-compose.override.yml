@@ -13,8 +13,20 @@ services:
       # (WSL2 bind mounts). Polling is the canonical workaround for nodemon's
       # underlying chokidar watcher.
       CHOKIDAR_USEPOLLING: "true"
+    # Ports live here (dev only). The base compose publishes nothing, so in
+    # production only Caddy is internet-facing.
+    ports:
+      - "5000:5000"
     volumes:
       - ./backend/src:/app/backend/src
       - ./backend/nodemon.json:/app/backend/nodemon.json
       - ./backend/tsconfig.json:/app/backend/tsconfig.json
       - ./backend/tsconfig.build.json:/app/backend/tsconfig.build.json
+
+  buyer-app:
+    ports:
+      - "3000:8080"
+
+  admin-app:
+    ports:
+      - "3001:8080"

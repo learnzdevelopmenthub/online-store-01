@@ -12,6 +12,12 @@ import { usersRouter } from './routes/users.routes.js';
 export function createApp(): Express {
   const app = express();
 
+  // Behind Caddy in production: trust the first proxy hop so req.ip / req.secure
+  // and express-rate-limit use the real client IP from X-Forwarded-For.
+  if (env.isProd) {
+    app.set('trust proxy', 1);
+  }
+
   app.use(helmet());
   app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
   app.use(express.json());
