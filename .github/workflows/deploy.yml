@@ -67,11 +67,15 @@ jobs:
             git fetch --all --tags --prune
             # Deploy the exact released commit (detached HEAD), not whatever main HEAD is.
             git checkout --force ${{ github.ref_name }}
-            docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d --build
-            docker compose -f docker-compose.yml -f docker-compose.staging.yml ps
-            # Smoke test on the box; retry while the backend container warms up.
+            docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
+            docker compose -f docker-compose.yml -f docker-compose.production.yml ps
+            # Smoke test: the backend no longer publishes a host port (Caddy fronts
+            # everything), so check health from inside the container while it warms up.
             for i in $(seq 1 12); do
-              if curl -fsS http://localhost:5000/health; then echo "OK"; exit 0; fi
+              if docker compose -f docker-compose.yml -f docker-compose.production.yml exec -T backend \
+                node -e "fetch('http://127.0.0.1:5000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; then
+                echo "backend healthy"; exit 0
+              fi
               echo "waiting for backend ($i)"; sleep 5
             done
             echo "health check failed after deploy"; exit 1

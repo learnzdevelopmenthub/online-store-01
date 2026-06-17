@@ -1,0 +1,50 @@
+# Production overlay — getzmybook.shop over HTTPS via Caddy.
+#
+# Run WITHOUT the dev override by listing both files explicitly (passing -f
+# disables the automatic load of docker-compose.override.yml, so the backend
+# runs the production image, not nodemon):
+#
+#   docker compose -f docker-compose.yml -f docker-compose.production.yml up -d --build
+#
+# Only Caddy publishes ports (80/443). The app containers are reachable solely
+# on the internal network, so :5000/:3000/:3001 are never exposed to the host.
+# .env.production must sit next to these compose files (backend secrets + CORS).
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: store-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Let's Encrypt account email; set in .env.production or the deploy shell.
+      ACME_EMAIL: ${ACME_EMAIL:-admin@getzmybook.shop}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # issued certs — MUST persist across restarts
+      - caddy-config:/config
+    networks:
+      - app-network
+    depends_on:
+      - backend
+      - buyer-app
+      - admin-app
+
+  backend:
+    env_file:
+      - .env.production
+
+  buyer-app:
+    build:
+      args:
+        VITE_API_URL: https://api.getzmybook.shop
+
+  admin-app:
+    build:
+      args:
+        VITE_API_URL: https://api.getzmybook.shop
+
+volumes:
+  caddy-data:
+  caddy-config:

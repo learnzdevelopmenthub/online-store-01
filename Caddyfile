@@ -1,0 +1,32 @@
+# Caddy edge reverse proxy for getzmybook.shop (production).
+# Caddy obtains and auto-renews Let's Encrypt certificates via the ACME HTTP-01
+# challenge on :80 — no certbot, no cron. Certs persist in the caddy_data volume.
+
+{
+	# ACME account email for Let's Encrypt expiry notices. Override at deploy time
+	# with the ACME_EMAIL env var (see docker-compose.production.yml).
+	email {$ACME_EMAIL:admin@getzmybook.shop}
+}
+
+# Buyer storefront — apex domain.
+getzmybook.shop {
+	encode zstd gzip
+	reverse_proxy buyer-app:8080
+}
+
+# Redirect www → apex (cert is auto-issued for www too).
+www.getzmybook.shop {
+	redir https://getzmybook.shop{uri} permanent
+}
+
+# Backend API.
+api.getzmybook.shop {
+	encode zstd gzip
+	reverse_proxy backend:5000
+}
+
+# Admin app.
+admin.getzmybook.shop {
+	encode zstd gzip
+	reverse_proxy admin-app:8080
+}
