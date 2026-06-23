@@ -4,6 +4,7 @@ import {
   bulkBooks,
   createBook,
   deleteBook,
+  getAdminBook,
   listAdminBooks,
   publishBook,
   updateBook,
@@ -17,6 +18,7 @@ export const adminRouter = Router();
 adminRouter.use(requireAuth, requireAdmin);
 
 adminRouter.get('/books', listAdminBooks);
+adminRouter.get('/books/:id', getAdminBook);
 adminRouter.post(
   '/books',
   bookUpload.fields([

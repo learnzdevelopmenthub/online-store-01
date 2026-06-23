@@ -3,9 +3,12 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+import { AdminShell } from './components/AdminShell.tsx';
 import { AdminRoute } from './components/AdminRoute.tsx';
 import api from './lib/axios.ts';
 import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
+import BookFormPage from './pages/BookForm.tsx';
+import BooksPage from './pages/Books.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Login from './pages/Login.tsx';
 import { useLazyGetMeQuery } from './store/api/authApi.ts';
@@ -46,7 +49,12 @@ function AppRoutes() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route element={<AdminRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<AdminShell />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/books/new" element={<BookFormPage />} />
+          <Route path="/books/:id/edit" element={<BookFormPage />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

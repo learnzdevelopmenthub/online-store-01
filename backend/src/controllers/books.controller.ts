@@ -239,6 +239,15 @@ export const listAdminBooks: RequestHandler = async (req, res) => {
   });
 };
 
+export const getAdminBook: RequestHandler = async (req, res) => {
+  const id = requireValidId(req.params.id);
+  const book = await Book.findOne({ _id: id, isDeleted: false });
+  if (!book) {
+    throw new AppError(404, 'Book not found');
+  }
+  res.status(200).json({ book: serializeBook(book, true) });
+};
+
 export const createBook: RequestHandler = async (req, res) => {
   const payload = validatePayload<CreateBookInput>(createBookSchema, req.body);
   const files = getUploadedFiles(req);
