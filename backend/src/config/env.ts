@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 /** PEM keys are stored inline in env with literal `\n` escapes; restore real newlines. */
 const decodePem = (value: string): string => value.replace(/\\n/g, '\n');
+const emptyToUndefined = (value: unknown): unknown => (value === '' ? undefined : value);
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -34,12 +35,12 @@ const envSchema = z.object({
 
   // Cloudflare R2. The service validates these at call time so test/dev boots do
   // not require real object-storage credentials.
-  R2_ACCOUNT_ID: z.string().optional(),
-  R2_ACCESS_KEY_ID: z.string().optional(),
-  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_ACCESS_KEY_ID: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_SECRET_ACCESS_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
   R2_PUBLIC_BUCKET: z.string().default('books-public'),
   R2_PRIVATE_BUCKET: z.string().default('books-private'),
-  R2_PUBLIC_URL: z.string().url().optional(),
+  R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
 });
 
 const parsed = envSchema.safeParse(process.env);
