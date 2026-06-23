@@ -6,7 +6,9 @@ import morgan from 'morgan';
 
 import { env } from './config/env.js';
 import { errorMiddleware } from './middleware/error.middleware.js';
+import { adminRouter } from './routes/admin.routes.js';
 import { authRouter } from './routes/auth.routes.js';
+import { booksRouter } from './routes/books.routes.js';
 import { usersRouter } from './routes/users.routes.js';
 
 export function createApp(): Express {
@@ -31,6 +33,8 @@ export function createApp(): Express {
   });
 
   app.use('/api/auth', authRouter);
+  app.use('/api/books', booksRouter);
+  app.use('/api/admin', adminRouter);
   app.use('/api/users', usersRouter);
 
   // Error handler must be registered last.

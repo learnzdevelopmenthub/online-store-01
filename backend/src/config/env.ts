@@ -31,6 +31,15 @@ const envSchema = z.object({
 
   // Reserved for later milestones — optional so placeholder values don't fail boot
   GOOGLE_CLIENT_ID: z.string().optional(),
+
+  // Cloudflare R2. The service validates these at call time so test/dev boots do
+  // not require real object-storage credentials.
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_PUBLIC_BUCKET: z.string().default('books-public'),
+  R2_PRIVATE_BUCKET: z.string().default('books-private'),
+  R2_PUBLIC_URL: z.string().url().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
