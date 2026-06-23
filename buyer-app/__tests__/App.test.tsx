@@ -4,9 +4,11 @@ import { render, screen } from '@testing-library/react';
 import App from '../src/App.tsx';
 
 describe('<App />', () => {
-  it('renders the Buyer App heading without crashing', () => {
+  it('renders the catalogue home page without crashing', async () => {
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: /buyer app/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /digital pdf bookstore/i }),
+    ).toBeInTheDocument();
   });
 });
