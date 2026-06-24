@@ -8,7 +8,7 @@ describe('<App />', () => {
     render(<App />);
 
     expect(
-      await screen.findByRole('heading', { name: /digital pdf bookstore/i }),
+      await screen.findByRole('heading', { name: /discover your next favourite read/i }),
     ).toBeInTheDocument();
   });
 });

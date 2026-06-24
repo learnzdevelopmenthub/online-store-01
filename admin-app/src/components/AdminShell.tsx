@@ -22,34 +22,37 @@ export function AdminShell() {
   }
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <header className="border-b border-base-300 bg-base-100">
-        <div className="navbar mx-auto max-w-7xl px-4">
-          <div className="navbar-start">
-            <Link to="/dashboard" className="text-xl font-bold">
-              Store Admin
+    <div className="app-shell">
+      <header id="app-header">
+        <nav className="top-nav">
+          <div className="nav-inner">
+            <Link to="/dashboard" className="brand" aria-label="EBookN Admin">
+              <span>E</span>BookN Admin
             </Link>
+
+            <div className="nav-links nav-links-open" style={{ flex: 1, justifyContent: 'center' }}>
+              <NavLink to="/dashboard">
+                <LayoutDashboard size={16} />
+                Dashboard
+              </NavLink>
+              <NavLink to="/books">
+                <BookOpen size={16} />
+                Books
+              </NavLink>
+            </div>
+
+            <div className="nav-tools">
+              {user?.email && <span className="muted-sm admin-email">{user.email}</span>}
+              <button type="button" className="btn btn-ghost btn-sm" onClick={onLogout}>
+                <LogOut size={16} />
+                Log out
+              </button>
+            </div>
           </div>
-          <nav className="navbar-center hidden gap-2 md:flex">
-            <NavLink to="/dashboard" className="btn btn-ghost btn-sm">
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </NavLink>
-            <NavLink to="/books" className="btn btn-ghost btn-sm">
-              <BookOpen className="h-4 w-4" />
-              Books
-            </NavLink>
-          </nav>
-          <div className="navbar-end gap-2">
-            <span className="hidden text-sm text-base-content/70 lg:inline">{user?.email}</span>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={onLogout}>
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Log out</span>
-            </button>
-          </div>
-        </div>
+        </nav>
       </header>
-      <main className="mx-auto max-w-7xl px-4 py-6">
+
+      <main id="app-main" className="container">
         <Outlet />
       </main>
     </div>

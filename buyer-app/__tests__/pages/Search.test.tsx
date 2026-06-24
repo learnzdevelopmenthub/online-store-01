@@ -30,10 +30,10 @@ describe('<SearchPage />', () => {
       { route: '/search' },
     );
 
-    await userEvent.type(screen.getByPlaceholderText(/title, author, topic/i), 'javascript');
-    fireEvent.click(screen.getByLabelText('Technology'));
-    fireEvent.change(screen.getByLabelText(/minimum rating/i), { target: { value: '4' } });
-    fireEvent.change(screen.getByRole('slider'), { target: { value: '99000' } });
+    await userEvent.type(screen.getByPlaceholderText(/title, author, or keyword/i), 'javascript');
+    fireEvent.change(screen.getByLabelText(/category/i), { target: { value: 'Technology' } });
+    fireEvent.change(screen.getByLabelText(/min rating/i), { target: { value: '4' } });
+    fireEvent.change(screen.getByLabelText(/max price/i), { target: { value: '990' } });
 
     await waitFor(() => expect(lastUrl.searchParams.get('q')).toBe('javascript'), {
       timeout: 1200,

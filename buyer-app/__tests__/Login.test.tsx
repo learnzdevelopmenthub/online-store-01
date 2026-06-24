@@ -34,7 +34,7 @@ describe('<Login />', () => {
     const { store } = renderWithProviders(<Login />);
     await userEvent.type(screen.getByLabelText('Email'), 'jane@example.com');
     await userEvent.type(screen.getByLabelText('Password'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
       expect(store.getState().auth.status).toBe('authenticated');

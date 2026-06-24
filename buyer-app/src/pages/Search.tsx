@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { BookGrid } from '../components/BookGrid.tsx';
-import { Navbar } from '../components/Navbar.tsx';
 import { useSearchBooksQuery } from '../store/api/booksApi.ts';
 
 const CATEGORIES = ['Fiction', 'Technology', 'Business', 'Science'];
@@ -12,8 +11,10 @@ export default function SearchPage() {
   const initialQuery = searchParams.get('q') ?? '';
   const [q, setQ] = useState(initialQuery);
   const [debouncedQ, setDebouncedQ] = useState(initialQuery);
-  const [category, setCategory] = useState(searchParams.get('category') ?? '');
-  const [maxPrice, setMaxPrice] = useState(Number(searchParams.get('maxPrice') ?? 500000));
+  const [category, setCategory] = useState(searchParams.get('category') ?? 'all');
+  const [maxPrice, setMaxPrice] = useState(
+    searchParams.has('maxPrice') ? Number(searchParams.get('maxPrice')) / 100 : 99999,
+  );
   const [minRating, setMinRating] = useState(Number(searchParams.get('minRating') ?? 0));
   const [page, setPage] = useState(Number(searchParams.get('page') ?? 1));
 
@@ -25,8 +26,8 @@ export default function SearchPage() {
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedQ) params.set('q', debouncedQ);
-    if (category) params.set('category', category);
-    if (maxPrice < 500000) params.set('maxPrice', String(maxPrice));
+    if (category !== 'all') params.set('category', category);
+    if (maxPrice !== 99999) params.set('maxPrice', String(maxPrice * 100));
     if (minRating > 0) params.set('minRating', String(minRating));
     if (page > 1) params.set('page', String(page));
     setSearchParams(params, { replace: true });
@@ -35,127 +36,109 @@ export default function SearchPage() {
   const query = useMemo(
     () => ({
       q: debouncedQ,
-      category: category || undefined,
-      maxPrice,
+      category: category === 'all' ? undefined : category,
+      maxPrice: maxPrice * 100,
       minRating,
       page,
       limit: 12,
     }),
     [category, debouncedQ, maxPrice, minRating, page],
   );
-  const { data, isFetching } = useSearchBooksQuery(query);
+  const { data } = useSearchBooksQuery(query);
   const pagination = data?.pagination;
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar />
-      <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[280px_1fr]">
-        <aside className="space-y-5 rounded-box bg-base-100 p-4 shadow-sm">
-          <label className="form-control">
-            <span className="label-text">Search</span>
+    <>
+      <section className="panel section">
+        <h1>Search Books</h1>
+        <form
+          className="filter-bar"
+          style={{ marginTop: 'var(--sp-6)' }}
+          onSubmit={(event) => event.preventDefault()}
+        >
+          <div className="field">
+            <label htmlFor="sq">Search query</label>
             <input
+              id="sq"
               value={q}
               onChange={(event) => {
                 setPage(1);
                 setQ(event.target.value);
               }}
-              className="input input-bordered"
-              placeholder="Title, author, topic"
+              placeholder="Title, author, or keyword"
             />
-          </label>
-
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-semibold">Category</legend>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                className="radio radio-sm"
-                checked={!category}
-                onChange={() => {
-                  setPage(1);
-                  setCategory('');
-                }}
-              />
-              All
-            </label>
-            {CATEGORIES.map((item) => (
-              <label key={item} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  className="radio radio-sm"
-                  checked={category === item}
-                  onChange={() => {
-                    setPage(1);
-                    setCategory(item);
-                  }}
-                />
-                {item}
-              </label>
-            ))}
-          </fieldset>
-
-          <label className="form-control">
-            <span className="label-text">Max price: ₹{Math.round(maxPrice / 100)}</span>
-            <input
-              type="range"
-              min={0}
-              max={500000}
-              step={10000}
-              value={maxPrice}
-              className="range range-primary"
+          </div>
+          <div className="field">
+            <label htmlFor="scat">Category</label>
+            <select
+              id="scat"
+              value={category}
               onChange={(event) => {
                 setPage(1);
-                setMaxPrice(Number(event.target.value));
+                setCategory(event.target.value);
               }}
-            />
-          </label>
-
-          <label className="form-control">
-            <span className="label-text">Minimum rating</span>
+            >
+              <option value="all">All categories</option>
+              {CATEGORIES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="srat">Min rating</label>
             <select
-              className="select select-bordered"
+              id="srat"
               value={minRating}
               onChange={(event) => {
                 setPage(1);
                 setMinRating(Number(event.target.value));
               }}
             >
-              <option value={0}>Any rating</option>
-              <option value={3}>3 stars and up</option>
-              <option value={4}>4 stars and up</option>
+              {[0, 1, 2, 3, 4, 5].map((value) => (
+                <option key={value} value={value}>
+                  {value === 0 ? 'Any' : `${value}+`}
+                </option>
+              ))}
             </select>
-          </label>
-        </aside>
-
-        <section className="space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <h1 className="text-2xl font-bold">Search Books</h1>
-            {isFetching && <span className="loading loading-spinner" />}
           </div>
-          <BookGrid books={data?.books ?? []} />
-          {pagination && pagination.totalPages > 1 && (
-            <div className="join">
+          <div className="field">
+            <label htmlFor="sprice">Max price</label>
+            <input
+              id="sprice"
+              type="number"
+              min="100"
+              value={maxPrice === 99999 ? '' : maxPrice}
+              onChange={(event) => setMaxPrice(Number(event.target.value || 99999))}
+              placeholder="No limit"
+            />
+          </div>
+          <button className="btn btn-primary" type="submit" style={{ alignSelf: 'end' }}>
+            Search
+          </button>
+        </form>
+        <p className="muted-sm" style={{ marginTop: 'var(--sp-4)' }}>
+          {data?.pagination.total ?? 0} results found
+        </p>
+      </section>
+
+      <section className="section">
+        <BookGrid books={data?.books ?? []} emptyText="No books matched your search." />
+        {pagination && pagination.totalPages > 1 && (
+          <div className="pagination">
+            {Array.from({ length: pagination.totalPages }, (_, index) => index + 1).map((item) => (
               <button
-                className="btn join-item"
-                disabled={page <= 1}
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                key={item}
+                className={item === page ? 'active' : ''}
+                onClick={() => setPage(item)}
               >
-                Previous
+                {item}
               </button>
-              <span className="btn join-item pointer-events-none">
-                {pagination.page} / {pagination.totalPages}
-              </span>
-              <button
-                className="btn join-item"
-                disabled={page >= pagination.totalPages}
-                onClick={() => setPage((current) => current + 1)}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </section>
-      </main>
-    </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </>
   );
 }

@@ -38,18 +38,11 @@ function FileDrop({ label, file, accept, onFile }: FileDropProps) {
   });
 
   return (
-    <div
-      {...getRootProps()}
-      className={`rounded-box border border-dashed p-4 text-center ${
-        isDragActive ? 'border-primary bg-primary/10' : 'border-base-300 bg-base-200'
-      }`}
-    >
+    <div {...getRootProps()} className={`dropzone ${isDragActive ? 'dropzone-active' : ''}`}>
       <input {...getInputProps()} />
-      <Upload className="mx-auto mb-2 h-5 w-5" />
-      <p className="font-medium">{label}</p>
-      <p className="mt-1 text-sm text-base-content/70">
-        {file ? file.name : 'Drop file or click to browse'}
-      </p>
+      <Upload size={20} />
+      <p>{label}</p>
+      <p className="muted-sm">{file ? file.name : 'Drop file or click to browse'}</p>
     </div>
   );
 }
@@ -134,53 +127,46 @@ export default function BookFormPage() {
   });
 
   return (
-    <section className="space-y-4">
+    <section className="section">
       <Link to="/books" className="btn btn-ghost btn-sm">
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft size={16} />
         Books
       </Link>
-      <form onSubmit={onSubmit} className="grid gap-5 lg:grid-cols-[1fr_320px]" noValidate>
-        <div className="space-y-4 rounded-box bg-base-100 p-5 shadow-sm">
-          <h1 className="text-3xl font-bold">{isEdit ? 'Edit Book' : 'Add Book'}</h1>
 
-          <label className="form-control">
-            <span className="label-text">Title</span>
-            <input className="input input-bordered" {...register('title')} />
-          </label>
-          {errors.title && <p className="text-sm text-error">{errors.title.message}</p>}
+      <form onSubmit={onSubmit} className="admin-form-grid" noValidate>
+        <div className="panel">
+          <p className="eyebrow">Catalogue editor</p>
+          <h1>{isEdit ? 'Edit Book' : 'Add Book'}</h1>
 
-          <label className="form-control">
-            <span className="label-text">Author</span>
-            <input className="input input-bordered" {...register('author')} />
+          <label className="field">
+            <span>Title</span>
+            <input {...register('title')} />
           </label>
-          {errors.author && <p className="text-sm text-error">{errors.author.message}</p>}
+          {errors.title && <p className="form-error">{errors.title.message}</p>}
 
-          <label className="form-control">
-            <span className="label-text">Category</span>
-            <input className="input input-bordered" {...register('category')} />
+          <label className="field">
+            <span>Author</span>
+            <input {...register('author')} />
           </label>
-          {errors.category && <p className="text-sm text-error">{errors.category.message}</p>}
+          {errors.author && <p className="form-error">{errors.author.message}</p>}
 
-          <label className="form-control">
-            <span className="label-text">Price (INR)</span>
-            <input
-              type="number"
-              min="1"
-              step="1"
-              className="input input-bordered"
-              {...register('priceRupees')}
-            />
+          <label className="field">
+            <span>Category</span>
+            <input {...register('category')} />
           </label>
-          {errors.priceRupees && <p className="text-sm text-error">{errors.priceRupees.message}</p>}
+          {errors.category && <p className="form-error">{errors.category.message}</p>}
 
-          <label className="form-control">
-            <span className="label-text">Description</span>
-            <textarea
-              className="textarea textarea-bordered min-h-40"
-              {...register('description')}
-            />
+          <label className="field">
+            <span>Price (INR)</span>
+            <input type="number" min="1" step="1" {...register('priceRupees')} />
           </label>
-          {errors.description && <p className="text-sm text-error">{errors.description.message}</p>}
+          {errors.priceRupees && <p className="form-error">{errors.priceRupees.message}</p>}
+
+          <label className="field">
+            <span>Description</span>
+            <textarea className="admin-textarea" {...register('description')} />
+          </label>
+          {errors.description && <p className="form-error">{errors.description.message}</p>}
 
           <button
             type="submit"
@@ -191,14 +177,8 @@ export default function BookFormPage() {
           </button>
         </div>
 
-        <aside className="space-y-4">
-          {previewUrl && (
-            <img
-              src={previewUrl}
-              alt="Cover preview"
-              className="aspect-[2/3] w-full rounded-box object-cover shadow-sm"
-            />
-          )}
+        <aside className="admin-side-panel">
+          {previewUrl && <img src={previewUrl} alt="Cover preview" className="book-form-preview" />}
           <FileDrop
             label="Cover image"
             file={coverImage}

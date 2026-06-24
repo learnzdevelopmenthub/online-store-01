@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+import { BuyerShell } from './components/Navbar.tsx';
 import { ProtectedRoute } from './components/ProtectedRoute.tsx';
 import api from './lib/axios.ts';
 import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
@@ -44,14 +45,16 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/books/:id" element={<BookDetailPage />} />
-      <Route path="/category/:category" element={<CategoryPage />} />
-      <Route path="/search" element={<SearchPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/profile" element={<Profile />} />
+      <Route element={<BuyerShell />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route path="/category/:category" element={<CategoryPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

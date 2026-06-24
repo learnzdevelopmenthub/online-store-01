@@ -73,7 +73,7 @@ export default function BooksPage() {
         header: ({ table }) => (
           <input
             type="checkbox"
-            className="checkbox checkbox-sm"
+            className="admin-checkbox"
             checked={table.getIsAllRowsSelected()}
             ref={(input) => {
               if (input) input.indeterminate = table.getIsSomeRowsSelected();
@@ -85,7 +85,7 @@ export default function BooksPage() {
         cell: ({ row }) => (
           <input
             type="checkbox"
-            className="checkbox checkbox-sm"
+            className="admin-checkbox"
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
             aria-label={`Select ${row.original.title}`}
@@ -96,11 +96,7 @@ export default function BooksPage() {
         header: 'Cover',
         accessorKey: 'coverImageUrl',
         cell: ({ row }) => (
-          <img
-            src={row.original.coverImageUrl}
-            alt={row.original.title}
-            className="h-16 w-11 rounded object-cover"
-          />
+          <img src={row.original.coverImageUrl} alt={row.original.title} className="cover-thumb" />
         ),
       },
       { header: 'Title', accessorKey: 'title' },
@@ -116,7 +112,7 @@ export default function BooksPage() {
         cell: ({ row }) => (
           <button
             type="button"
-            className={`badge ${row.original.isPublished ? 'badge-success' : 'badge-ghost'}`}
+            className={`pill ${row.original.isPublished ? 'pill-ok' : ''}`}
             onClick={() => void togglePublish(row.original)}
           >
             {row.original.isPublished ? 'Published' : 'Draft'}
@@ -132,21 +128,21 @@ export default function BooksPage() {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-          <div className="flex gap-2">
+          <div className="admin-actions">
             <Link
               to={`/books/${row.original._id}/edit`}
               className="btn btn-ghost btn-sm"
               aria-label="Edit"
             >
-              <Edit className="h-4 w-4" />
+              <Edit size={16} />
             </Link>
             <button
               type="button"
-              className="btn btn-ghost btn-sm text-error"
+              className="btn btn-ghost btn-sm btn-danger-soft"
               onClick={() => void onDelete(row.original)}
               aria-label="Delete"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 size={16} />
             </button>
           </div>
         ),
@@ -165,19 +161,20 @@ export default function BooksPage() {
   });
 
   return (
-    <section className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <section className="section">
+      <div className="section-head">
         <div>
-          <h1 className="text-3xl font-bold">Books</h1>
-          <p className="text-sm text-base-content/70">Manage catalogue uploads and publishing.</p>
+          <p className="eyebrow">Admin catalogue</p>
+          <h1>Books</h1>
+          <p className="muted">Manage catalogue uploads and publishing.</p>
         </div>
         <Link to="/books/new" className="btn btn-primary">
-          <Plus className="h-4 w-4" />
+          <Plus size={16} />
           Add Book
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-2 rounded-box bg-base-100 p-3 shadow-sm">
+      <div className="panel admin-toolbar">
         <button
           className="btn btn-sm"
           disabled={selectedIds.length === 0}
@@ -193,17 +190,17 @@ export default function BooksPage() {
           Unpublish
         </button>
         <button
-          className="btn btn-sm btn-error"
+          className="btn btn-sm btn-danger"
           disabled={selectedIds.length === 0 || bulkState.isLoading}
           onClick={() => void runBulk('delete')}
         >
           Delete
         </button>
-        {isFetching && <span className="loading loading-spinner" />}
+        {isFetching && <span className="muted-sm">Loading books...</span>}
       </div>
 
-      <div className="overflow-x-auto rounded-box bg-base-100 shadow-sm">
-        <table className="table">
+      <div className="panel admin-table-wrap">
+        <table className="admin-table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -230,15 +227,15 @@ export default function BooksPage() {
       </div>
 
       {data?.pagination && data.pagination.totalPages > 1 && (
-        <div className="join">
-          <button className="btn join-item" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+        <div className="pagination">
+          <button className="btn" disabled={page <= 1} onClick={() => setPage(page - 1)}>
             Previous
           </button>
-          <span className="btn join-item pointer-events-none">
+          <span className="muted">
             {data.pagination.page} / {data.pagination.totalPages}
           </span>
           <button
-            className="btn join-item"
+            className="btn"
             disabled={page >= data.pagination.totalPages}
             onClick={() => setPage(page + 1)}
           >

@@ -9,12 +9,14 @@ interface BookGridProps {
 export function BookGrid({ books, emptyText = 'No books found.' }: BookGridProps) {
   if (books.length === 0) {
     return (
-      <p className="rounded-box bg-base-200 p-6 text-center text-base-content/70">{emptyText}</p>
+      <div className="empty-state">
+        <p>{emptyText}</p>
+      </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="card-grid">
       {books.map((book) => (
         <BookCard key={book._id} book={book} />
       ))}

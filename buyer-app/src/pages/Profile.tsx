@@ -67,87 +67,71 @@ export default function Profile() {
     try {
       await logout().unwrap();
     } catch {
-      // Ignore network errors — clear the client session regardless.
+      // Clear the client session regardless of network result.
     }
     dispatch(clearCredentials());
     navigate('/login');
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center gap-6 bg-base-100 p-8">
-      <div className="w-full max-w-md flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My profile</h1>
-        <button type="button" className="btn btn-ghost" onClick={onLogout}>
-          Log out
-        </button>
-      </div>
-      <p className="w-full max-w-md text-sm opacity-70">{user?.email}</p>
+    <section className="section layout-2col">
+      <article className="panel">
+        <div className="book-row" style={{ marginBottom: 'var(--sp-4)' }}>
+          <h2>Profile</h2>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={onLogout}>
+            Log out
+          </button>
+        </div>
+        <p className="muted-sm" style={{ marginBottom: 'var(--sp-6)' }}>
+          {user?.email}
+        </p>
+        <form onSubmit={onSaveProfile} noValidate>
+          <div className="field">
+            <label htmlFor="fullName">Display Name</label>
+            <input id="fullName" {...profileForm.register('fullName')} />
+            {profileForm.formState.errors.fullName && (
+              <p className="muted-sm">{profileForm.formState.errors.fullName.message}</p>
+            )}
+          </div>
+          <div className="field">
+            <label htmlFor="avatar">Avatar URL</label>
+            <input id="avatar" placeholder="https://..." {...profileForm.register('avatar')} />
+            {profileForm.formState.errors.avatar && (
+              <p className="muted-sm">{profileForm.formState.errors.avatar.message}</p>
+            )}
+          </div>
+          <button className="btn btn-primary" type="submit" disabled={savingProfile}>
+            Update Profile
+          </button>
+        </form>
+      </article>
 
-      <form
-        onSubmit={onSaveProfile}
-        className="card w-full max-w-md bg-base-200 p-6 gap-3"
-        noValidate
-      >
-        <h2 className="text-lg font-semibold">Details</h2>
-        <label className="form-control">
-          <span className="label-text">Full name</span>
-          <input
-            id="fullName"
-            className="input input-bordered"
-            {...profileForm.register('fullName')}
-          />
-        </label>
-        {profileForm.formState.errors.fullName && (
-          <p className="text-error text-sm">{profileForm.formState.errors.fullName.message}</p>
-        )}
-        <label className="form-control">
-          <span className="label-text">Avatar URL</span>
-          <input id="avatar" className="input input-bordered" {...profileForm.register('avatar')} />
-        </label>
-        {profileForm.formState.errors.avatar && (
-          <p className="text-error text-sm">{profileForm.formState.errors.avatar.message}</p>
-        )}
-        <button type="submit" className="btn btn-primary" disabled={savingProfile}>
-          Save changes
-        </button>
-      </form>
-
-      <form
-        onSubmit={onChangePassword}
-        className="card w-full max-w-md bg-base-200 p-6 gap-3"
-        noValidate
-      >
-        <h2 className="text-lg font-semibold">Change password</h2>
-        <label className="form-control">
-          <span className="label-text">Current password</span>
-          <input
-            id="currentPassword"
-            type="password"
-            className="input input-bordered"
-            {...passwordForm.register('currentPassword')}
-          />
-        </label>
-        {passwordForm.formState.errors.currentPassword && (
-          <p className="text-error text-sm">
-            {passwordForm.formState.errors.currentPassword.message}
-          </p>
-        )}
-        <label className="form-control">
-          <span className="label-text">New password</span>
-          <input
-            id="newPassword"
-            type="password"
-            className="input input-bordered"
-            {...passwordForm.register('newPassword')}
-          />
-        </label>
-        {passwordForm.formState.errors.newPassword && (
-          <p className="text-error text-sm">{passwordForm.formState.errors.newPassword.message}</p>
-        )}
-        <button type="submit" className="btn btn-primary" disabled={savingPassword}>
-          Update password
-        </button>
-      </form>
-    </main>
+      <article className="panel">
+        <h2>Change Password</h2>
+        <form onSubmit={onChangePassword} style={{ marginTop: 'var(--sp-5)' }} noValidate>
+          <div className="field">
+            <label htmlFor="currentPassword">Current Password</label>
+            <input
+              id="currentPassword"
+              type="password"
+              {...passwordForm.register('currentPassword')}
+            />
+            {passwordForm.formState.errors.currentPassword && (
+              <p className="muted-sm">{passwordForm.formState.errors.currentPassword.message}</p>
+            )}
+          </div>
+          <div className="field">
+            <label htmlFor="newPassword">New Password (min 8 chars)</label>
+            <input id="newPassword" type="password" {...passwordForm.register('newPassword')} />
+            {passwordForm.formState.errors.newPassword && (
+              <p className="muted-sm">{passwordForm.formState.errors.newPassword.message}</p>
+            )}
+          </div>
+          <button className="btn btn-primary" type="submit" disabled={savingPassword}>
+            Change Password
+          </button>
+        </form>
+      </article>
+    </section>
   );
 }

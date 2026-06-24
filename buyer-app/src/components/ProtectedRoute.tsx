@@ -7,8 +7,8 @@ export function ProtectedRoute() {
 
   if (status === 'idle') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base-100">
-        <span className="loading loading-spinner loading-lg" />
+      <div className="empty-state">
+        <p>Loading session...</p>
       </div>
     );
   }
