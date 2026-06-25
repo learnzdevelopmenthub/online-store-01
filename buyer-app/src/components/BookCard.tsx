@@ -12,7 +12,17 @@ export function BookCard({ book }: BookCardProps) {
   return (
     <article className="card">
       <Link to={`/books/${book._id}`} aria-label={book.title}>
-        <div className="card-media">{book.category}</div>
+        <div className="card-media">
+          {book.coverImageUrl ? (
+            <img
+              src={book.coverImageUrl}
+              alt={book.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            book.category
+          )}
+        </div>
       </Link>
       <div className="card-body">
         <h3 className="book-title">

@@ -52,7 +52,15 @@ export default function BookDetailPage() {
             className="card-media"
             style={{ aspectRatio: '3 / 4', borderRadius: 0, fontSize: '1rem' }}
           >
-            {book.category} Cover
+            {book.coverImageUrl ? (
+              <img
+                src={book.coverImageUrl}
+                alt={book.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              `${book.category} Cover`
+            )}
           </div>
         </article>
         <article className="panel">
