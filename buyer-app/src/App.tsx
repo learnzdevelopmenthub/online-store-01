@@ -3,13 +3,17 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
+import { BuyerShell } from './components/Navbar.tsx';
 import { ProtectedRoute } from './components/ProtectedRoute.tsx';
 import api from './lib/axios.ts';
 import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
+import BookDetailPage from './pages/BookDetail.tsx';
+import CategoryPage from './pages/Category.tsx';
 import Home from './pages/Home.tsx';
 import Login from './pages/Login.tsx';
 import Profile from './pages/Profile.tsx';
 import Register from './pages/Register.tsx';
+import SearchPage from './pages/Search.tsx';
 import { useLazyGetMeQuery } from './store/api/authApi.ts';
 import { useAppDispatch } from './store/hooks.ts';
 import { clearCredentials, setCredentials } from './store/slices/authSlice.ts';
@@ -41,11 +45,16 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/profile" element={<Profile />} />
+      <Route element={<BuyerShell />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route path="/category/:category" element={<CategoryPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -40,32 +40,39 @@ export default function Login() {
   });
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-6 bg-base-100">
-      <h1 className="text-3xl font-bold">Admin App</h1>
-      <form onSubmit={onSubmit} className="card w-full max-w-sm bg-base-200 p-6 gap-3" noValidate>
-        <h2 className="text-xl font-semibold">Sign in</h2>
+    <main className="app-shell">
+      <section className="section auth-layout">
+        <form onSubmit={onSubmit} className="panel" noValidate>
+          <p className="eyebrow" style={{ textAlign: 'center' }}>
+            EBookN Admin
+          </p>
+          <h1 style={{ textAlign: 'center' }}>Admin App</h1>
+          <p className="muted-sm" style={{ textAlign: 'center', marginBottom: 'var(--sp-6)' }}>
+            Sign in to manage the store catalogue.
+          </p>
 
-        <label className="form-control">
-          <span className="label-text">Email</span>
-          <input id="email" type="email" className="input input-bordered" {...register('email')} />
-        </label>
-        {errors.email && <p className="text-error text-sm">{errors.email.message}</p>}
+          <label className="field">
+            <span>Email</span>
+            <input id="email" type="email" {...register('email')} />
+          </label>
+          {errors.email && <p className="form-error">{errors.email.message}</p>}
 
-        <label className="form-control">
-          <span className="label-text">Password</span>
-          <input
-            id="password"
-            type="password"
-            className="input input-bordered"
-            {...register('password')}
-          />
-        </label>
-        {errors.password && <p className="text-error text-sm">{errors.password.message}</p>}
+          <label className="field">
+            <span>Password</span>
+            <input id="password" type="password" {...register('password')} />
+          </label>
+          {errors.password && <p className="form-error">{errors.password.message}</p>}
 
-        <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-          {isLoading ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', marginTop: 'var(--sp-4)' }}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+      </section>
     </main>
   );
 }

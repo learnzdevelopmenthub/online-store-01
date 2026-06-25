@@ -31,7 +31,7 @@ export default function Register() {
   const onSubmit = handleSubmit(async ({ fullName, email, password }) => {
     try {
       await registerUser({ fullName, email, password }).unwrap();
-      toast.success('Account created — please log in');
+      toast.success('Account created. Please sign in.');
       navigate('/login');
     } catch (err) {
       const status = (err as { status?: number }).status;
@@ -40,56 +40,54 @@ export default function Register() {
   });
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-base-100">
-      <form onSubmit={onSubmit} className="card w-full max-w-sm bg-base-200 p-6 gap-3" noValidate>
-        <h1 className="text-2xl font-bold">Create account</h1>
-
-        <label className="form-control">
-          <span className="label-text">Full name</span>
-          <input id="fullName" className="input input-bordered" {...register('fullName')} />
-        </label>
-        {errors.fullName && <p className="text-error text-sm">{errors.fullName.message}</p>}
-
-        <label className="form-control">
-          <span className="label-text">Email</span>
-          <input id="email" type="email" className="input input-bordered" {...register('email')} />
-        </label>
-        {errors.email && <p className="text-error text-sm">{errors.email.message}</p>}
-
-        <label className="form-control">
-          <span className="label-text">Password</span>
-          <input
-            id="password"
-            type="password"
-            className="input input-bordered"
-            {...register('password')}
-          />
-        </label>
-        {errors.password && <p className="text-error text-sm">{errors.password.message}</p>}
-
-        <label className="form-control">
-          <span className="label-text">Confirm password</span>
-          <input
-            id="confirmPassword"
-            type="password"
-            className="input input-bordered"
-            {...register('confirmPassword')}
-          />
-        </label>
-        {errors.confirmPassword && (
-          <p className="text-error text-sm">{errors.confirmPassword.message}</p>
-        )}
-
-        <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-          {isLoading ? 'Creating…' : 'Create account'}
-        </button>
-        <p className="text-sm">
+    <section className="section auth-layout">
+      <div className="panel">
+        <h1 style={{ textAlign: 'center' }}>Create an Account</h1>
+        <p className="muted-sm" style={{ textAlign: 'center', marginBottom: 'var(--sp-6)' }}>
+          Join EBookN to purchase and download digital books
+        </p>
+        <form onSubmit={onSubmit} noValidate>
+          <div className="field">
+            <label htmlFor="fullName">Full Name</label>
+            <input id="fullName" placeholder="Your full name" {...register('fullName')} />
+            {errors.fullName && <p className="muted-sm">{errors.fullName.message}</p>}
+          </div>
+          <div className="field">
+            <label htmlFor="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" {...register('email')} />
+            {errors.email && <p className="muted-sm">{errors.email.message}</p>}
+          </div>
+          <div className="field">
+            <label htmlFor="password">Password (min 8 characters)</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Choose a strong password"
+              {...register('password')}
+            />
+            {errors.password && <p className="muted-sm">{errors.password.message}</p>}
+          </div>
+          <div className="field">
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" type="password" {...register('confirmPassword')} />
+            {errors.confirmPassword && <p className="muted-sm">{errors.confirmPassword.message}</p>}
+          </div>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={isLoading}
+            style={{ width: '100%' }}
+          >
+            {isLoading ? 'Creating...' : 'Create Account'}
+          </button>
+        </form>
+        <p className="muted-sm" style={{ textAlign: 'center', marginTop: 'var(--sp-6)' }}>
           Already have an account?{' '}
-          <Link to="/login" className="link">
-            Log in
+          <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+            Sign in
           </Link>
         </p>
-      </form>
-    </main>
+      </div>
+    </section>
   );
 }

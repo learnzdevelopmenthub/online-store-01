@@ -36,37 +36,52 @@ export default function Login() {
   });
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-base-100">
-      <form onSubmit={onSubmit} className="card w-full max-w-sm bg-base-200 p-6 gap-3" noValidate>
-        <h1 className="text-2xl font-bold">Log in</h1>
+    <section className="section auth-layout">
+      <div className="panel">
+        <h1 style={{ textAlign: 'center' }}>Welcome back</h1>
+        <p className="muted-sm" style={{ textAlign: 'center', marginBottom: 'var(--sp-6)' }}>
+          Sign in to access your library and orders
+        </p>
 
-        <label className="form-control">
-          <span className="label-text">Email</span>
-          <input id="email" type="email" className="input input-bordered" {...register('email')} />
-        </label>
-        {errors.email && <p className="text-error text-sm">{errors.email.message}</p>}
-
-        <label className="form-control">
-          <span className="label-text">Password</span>
-          <input
-            id="password"
-            type="password"
-            className="input input-bordered"
-            {...register('password')}
-          />
-        </label>
-        {errors.password && <p className="text-error text-sm">{errors.password.message}</p>}
-
-        <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-          {isLoading ? 'Logging in…' : 'Log in'}
+        <button className="btn btn-ghost" type="button" style={{ width: '100%' }}>
+          Continue with Google
         </button>
-        <p className="text-sm">
-          No account?{' '}
-          <Link to="/register" className="link">
-            Register
+
+        <div className="auth-divider">or</div>
+
+        <form onSubmit={onSubmit} noValidate>
+          <div className="field">
+            <label htmlFor="email">Email</label>
+            <input id="email" type="email" placeholder="buyer@example.com" {...register('email')} />
+            {errors.email && <p className="muted-sm">{errors.email.message}</p>}
+          </div>
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              {...register('password')}
+            />
+            {errors.password && <p className="muted-sm">{errors.password.message}</p>}
+          </div>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={isLoading}
+            style={{ width: '100%' }}
+          >
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </button>
+        </form>
+
+        <p className="muted-sm" style={{ textAlign: 'center', marginTop: 'var(--sp-6)' }}>
+          Don&apos;t have an account?{' '}
+          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+            Create one
           </Link>
         </p>
-      </form>
-    </main>
+      </div>
+    </section>
   );
 }

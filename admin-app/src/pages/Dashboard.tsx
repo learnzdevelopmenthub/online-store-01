@@ -1,32 +1,28 @@
-import { useNavigate } from 'react-router-dom';
-
-import { useLogoutMutation } from '../store/api/authApi.ts';
-import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
-import { clearCredentials } from '../store/slices/authSlice.ts';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth.user);
-  const [logout] = useLogoutMutation();
-
-  const onLogout = async () => {
-    try {
-      await logout().unwrap();
-    } catch {
-      // Clear the client session regardless of network result.
-    }
-    dispatch(clearCredentials());
-    navigate('/login');
-  };
-
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-4 bg-base-100">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <p className="text-sm opacity-70">{user?.email}</p>
-      <button type="button" className="btn btn-ghost" onClick={onLogout}>
-        Log out
-      </button>
-    </main>
+    <section className="section">
+      <div className="section-head">
+        <div>
+          <p className="eyebrow">Store Admin</p>
+          <h1>Dashboard</h1>
+        </div>
+      </div>
+
+      <div className="panel admin-hero-panel">
+        <p className="eyebrow">Catalogue management</p>
+        <h2>Add, publish, and manage every PDF book in one place.</h2>
+        <p className="muted">
+          Upload cover assets, attach private PDF files, publish releases, and run bulk catalogue
+          actions from the admin workspace.
+        </p>
+        <div className="row" style={{ marginTop: 'var(--sp-6)' }}>
+          <Link to="/books" className="btn btn-primary">
+            Manage Books
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }

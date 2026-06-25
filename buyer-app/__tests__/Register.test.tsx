@@ -12,18 +12,18 @@ const API = import.meta.env.VITE_API_URL;
 describe('<Register />', () => {
   it('renders all fields', () => {
     renderWithProviders(<Register />);
-    expect(screen.getByLabelText('Full name')).toBeInTheDocument();
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByLabelText('Confirm password')).toBeInTheDocument();
+    expect(screen.getByLabelText(/password \(min 8 characters\)/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
   });
 
   it('shows a validation error when passwords do not match', async () => {
     renderWithProviders(<Register />);
-    await userEvent.type(screen.getByLabelText('Full name'), 'Jane');
+    await userEvent.type(screen.getByLabelText(/full name/i), 'Jane');
     await userEvent.type(screen.getByLabelText('Email'), 'jane@example.com');
-    await userEvent.type(screen.getByLabelText('Password'), 'password123');
-    await userEvent.type(screen.getByLabelText('Confirm password'), 'different456');
+    await userEvent.type(screen.getByLabelText(/password \(min 8 characters\)/i), 'password123');
+    await userEvent.type(screen.getByLabelText(/confirm password/i), 'different456');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
     expect(await screen.findByText('Passwords do not match')).toBeInTheDocument();
@@ -39,10 +39,10 @@ describe('<Register />', () => {
     );
 
     renderWithProviders(<Register />);
-    await userEvent.type(screen.getByLabelText('Full name'), 'Jane');
+    await userEvent.type(screen.getByLabelText(/full name/i), 'Jane');
     await userEvent.type(screen.getByLabelText('Email'), 'jane@example.com');
-    await userEvent.type(screen.getByLabelText('Password'), 'password123');
-    await userEvent.type(screen.getByLabelText('Confirm password'), 'password123');
+    await userEvent.type(screen.getByLabelText(/password \(min 8 characters\)/i), 'password123');
+    await userEvent.type(screen.getByLabelText(/confirm password/i), 'password123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
 
     await waitFor(() => {
