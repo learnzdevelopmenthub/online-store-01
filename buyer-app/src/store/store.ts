@@ -4,16 +4,20 @@ import { setOnRefreshed, setOnRefreshFailed } from '../lib/axios.ts';
 import { setAccessToken as setModuleToken } from '../lib/tokenManager.ts';
 import { authApi } from './api/authApi.ts';
 import { booksApi } from './api/booksApi.ts';
+import { wishlistApi } from './api/wishlistApi.ts';
 import authReducer, { clearCredentials, setAccessToken } from './slices/authSlice.ts';
+import cartReducer from './slices/cartSlice.ts';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    cart: cartReducer,
     [authApi.reducerPath]: authApi.reducer,
     [booksApi.reducerPath]: booksApi.reducer,
+    [wishlistApi.reducerPath]: wishlistApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware, wishlistApi.middleware),
 });
 
 // Mirror the Redux access token into the axios module (kept out of localStorage).

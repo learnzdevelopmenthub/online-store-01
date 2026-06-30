@@ -6,17 +6,21 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { authApi } from '../src/store/api/authApi.ts';
 import { booksApi } from '../src/store/api/booksApi.ts';
+import { wishlistApi } from '../src/store/api/wishlistApi.ts';
 import authReducer from '../src/store/slices/authSlice.ts';
+import cartReducer from '../src/store/slices/cartSlice.ts';
 
 export function makeStore() {
   return configureStore({
     reducer: {
       auth: authReducer,
+      cart: cartReducer,
       [authApi.reducerPath]: authApi.reducer,
       [booksApi.reducerPath]: booksApi.reducer,
+      [wishlistApi.reducerPath]: wishlistApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware),
+      getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware, wishlistApi.middleware),
   });
 }
 

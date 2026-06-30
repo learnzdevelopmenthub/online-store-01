@@ -14,6 +14,7 @@ import Login from './pages/Login.tsx';
 import Profile from './pages/Profile.tsx';
 import Register from './pages/Register.tsx';
 import SearchPage from './pages/Search.tsx';
+import WishlistPage from './pages/Wishlist.tsx';
 import { useLazyGetMeQuery } from './store/api/authApi.ts';
 import { useAppDispatch } from './store/hooks.ts';
 import { clearCredentials, setCredentials } from './store/slices/authSlice.ts';
@@ -54,6 +55,7 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
