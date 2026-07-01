@@ -9,8 +9,10 @@ import api from './lib/axios.ts';
 import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
 import BookDetailPage from './pages/BookDetail.tsx';
 import CategoryPage from './pages/Category.tsx';
+import CheckoutPage from './pages/Checkout.tsx';
 import Home from './pages/Home.tsx';
 import Login from './pages/Login.tsx';
+import OrderHistoryPage from './pages/OrderHistory.tsx';
 import Profile from './pages/Profile.tsx';
 import Register from './pages/Register.tsx';
 import SearchPage from './pages/Search.tsx';
@@ -56,6 +58,8 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrderHistoryPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

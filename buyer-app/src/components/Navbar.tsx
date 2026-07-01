@@ -64,9 +64,11 @@ export function Navbar() {
           <NavLink to="/profile" onClick={() => setOpen(false)}>
             My Library
           </NavLink>
-          <NavLink to="/profile" onClick={() => setOpen(false)}>
-            Orders
-          </NavLink>
+          {user && (
+            <NavLink to="/orders" onClick={() => setOpen(false)}>
+              Orders
+            </NavLink>
+          )}
           <NavLink to="/search" onClick={() => setOpen(false)}>
             Help
           </NavLink>
@@ -211,7 +213,7 @@ export function Footer() {
                 <Link to="/profile">My Library</Link>
               </li>
               <li>
-                <Link to="/profile">Order History</Link>
+                <Link to="/orders">Order History</Link>
               </li>
               <li>
                 <Link to="/wishlist">Wishlist</Link>

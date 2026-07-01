@@ -242,9 +242,14 @@ export function CartDrawer() {
                 {formatPaise(total)}
               </span>
             </div>
-            <button type="button" className="btn btn-primary" disabled style={{ width: '100%' }}>
-              Checkout — coming soon
-            </button>
+            <Link
+              to="/checkout"
+              className="btn btn-primary"
+              onClick={() => dispatch(closeCart())}
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              Proceed to Checkout
+            </Link>
             <button
               type="button"
               className="btn btn-ghost"
