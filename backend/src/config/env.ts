@@ -33,6 +33,12 @@ const envSchema = z.object({
   // Reserved for later milestones — optional so placeholder values don't fail boot
   GOOGLE_CLIENT_ID: z.string().optional(),
 
+  // Razorpay — optional so test/dev boots don't require real credentials.
+  // The service validates these at call time.
+  RAZORPAY_KEY_ID: z.preprocess(emptyToUndefined, z.string().optional()),
+  RAZORPAY_KEY_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
+  RAZORPAY_WEBHOOK_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
+
   // Cloudflare R2. The service validates these at call time so test/dev boots do
   // not require real object-storage credentials.
   R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().optional()),

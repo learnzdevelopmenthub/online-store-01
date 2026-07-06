@@ -1,10 +1,13 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { BookGrid } from '../components/BookGrid.tsx';
 import { RatingStars } from '../components/RatingStars.tsx';
 import { formatPaise } from '../lib/format.ts';
+import { useGetWishlistQuery, useAddToWishlistMutation, useRemoveFromWishlistMutation } from '../store/api/wishlistApi.ts';
 import { useGetBookQuery } from '../store/api/booksApi.ts';
-import { useAppSelector } from '../store/hooks.ts';
+import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
+import { addToCart, openCart } from '../store/slices/cartSlice.ts';
 
 function userOwnsBook(user: unknown, bookId: string): boolean {
   const record = user as {
@@ -19,8 +22,15 @@ function userOwnsBook(user: unknown, bookId: string): boolean {
 
 export default function BookDetailPage() {
   const id = useParams().id ?? '';
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const cartItems = useAppSelector((state) => state.cart.items);
+
   const { data, isLoading, isError } = useGetBookQuery(id, { skip: !id });
+  const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !user });
+  const [addToWishlist, { isLoading: adding }] = useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: removing }] = useRemoveFromWishlistMutation();
 
   if (isLoading) {
     return (
@@ -43,6 +53,38 @@ export default function BookDetailPage() {
 
   const { book, relatedBooks } = data;
   const owned = userOwnsBook(user, book._id);
+  const inCart = cartItems.some((item) => item.bookId === book._id);
+  const inWishlist = wishlistData?.books.some((b) => b._id === book._id) ?? false;
+
+  function handleAddToCart() {
+    if (owned) return;
+    if (inCart) {
+      dispatch(openCart());
+      return;
+    }
+    dispatch(addToCart({ bookId: book._id, title: book.title, author: book.author, price: book.price, coverImageUrl: book.coverImageUrl }));
+    dispatch(openCart());
+    toast.success(`"${book.title}" added to cart`);
+  }
+
+  async function handleWishlist() {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(book._id).unwrap();
+        toast.success('Removed from wishlist');
+      } else {
+        await addToWishlist(book._id).unwrap();
+        toast.success('Added to wishlist');
+      }
+    } catch (err: unknown) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(message ?? 'Failed to update wishlist');
+    }
+  }
 
   return (
     <>
@@ -84,11 +126,21 @@ export default function BookDetailPage() {
             {owned && <span className="pill pill-ok">Already in your library</span>}
           </div>
           <div className="row">
-            <button className="btn btn-primary" type="button" disabled={owned}>
-              {owned ? 'Owned' : 'Add to Cart'}
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={owned}
+              onClick={handleAddToCart}
+            >
+              {owned ? 'Owned' : inCart ? 'In Cart — Open Cart' : 'Add to Cart'}
             </button>
-            <button className="btn btn-ghost" type="button">
-              Add to Wishlist
+            <button
+              className="btn btn-ghost"
+              type="button"
+              onClick={() => void handleWishlist()}
+              disabled={owned || adding || removing}
+            >
+              {inWishlist ? '♥ In Wishlist' : '♡ Add to Wishlist'}
             </button>
           </div>
         </article>

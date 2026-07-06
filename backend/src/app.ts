@@ -9,7 +9,9 @@ import { errorMiddleware } from './middleware/error.middleware.js';
 import { adminRouter } from './routes/admin.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { booksRouter } from './routes/books.routes.js';
+import { ordersRouter } from './routes/orders.routes.js';
 import { usersRouter } from './routes/users.routes.js';
+import { wishlistRouter } from './routes/wishlist.routes.js';
 
 export function createApp(): Express {
   const app = express();
@@ -22,7 +24,15 @@ export function createApp(): Express {
 
   app.use(helmet());
   app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
-  app.use(express.json());
+  // Capture the raw request body so the Razorpay webhook handler can verify
+  // the HMAC-SHA256 X-Razorpay-Signature before any DB read/write.
+  app.use(
+    express.json({
+      verify: (req, _res, buf) => {
+        (req as unknown as Record<string, unknown>).rawBody = buf;
+      },
+    }),
+  );
   app.use(cookieParser());
   if (!env.isTest) {
     app.use(morgan('dev'));
@@ -36,6 +46,8 @@ export function createApp(): Express {
   app.use('/api/books', booksRouter);
   app.use('/api/admin', adminRouter);
   app.use('/api/users', usersRouter);
+  app.use('/api/wishlist', wishlistRouter);
+  app.use('/api/orders', ordersRouter);
 
   // Error handler must be registered last.
   app.use(errorMiddleware);

@@ -1,11 +1,15 @@
 import { useState, type FormEvent } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
-import { useAppSelector } from '../store/hooks.ts';
+import { useAppDispatch, useAppSelector } from '../store/hooks.ts';
+import { openCart } from '../store/slices/cartSlice.ts';
+import { CartDrawer } from './CartDrawer.tsx';
 
 export function Navbar() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const cartCount = useAppSelector((state) => state.cart.items.length);
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -52,15 +56,19 @@ export function Navbar() {
           <NavLink to="/category/Technology" onClick={() => setOpen(false)}>
             Categories
           </NavLink>
+          {user && (
+            <NavLink to="/wishlist" onClick={() => setOpen(false)}>
+              Wishlist
+            </NavLink>
+          )}
           <NavLink to="/profile" onClick={() => setOpen(false)}>
             My Library
           </NavLink>
-          <NavLink to="/search" onClick={() => setOpen(false)}>
-            Cart
-          </NavLink>
-          <NavLink to="/profile" onClick={() => setOpen(false)}>
-            Orders
-          </NavLink>
+          {user && (
+            <NavLink to="/orders" onClick={() => setOpen(false)}>
+              Orders
+            </NavLink>
+          )}
           <NavLink to="/search" onClick={() => setOpen(false)}>
             Help
           </NavLink>
@@ -91,6 +99,53 @@ export function Navbar() {
               </svg>
             </button>
           </form>
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost"
+            onClick={() => dispatch(openCart())}
+            aria-label={`Open cart${cartCount > 0 ? `, ${cartCount} items` : ''}`}
+            style={{ position: 'relative' }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -6,
+                  background: 'var(--primary)',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  minWidth: 18,
+                  height: 18,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                  padding: '0 4px',
+                }}
+                aria-hidden="true"
+              >
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </button>
           {user ? (
             <Link className="btn btn-sm btn-ghost" to="/profile" aria-label="Profile">
               <svg
@@ -158,10 +213,10 @@ export function Footer() {
                 <Link to="/profile">My Library</Link>
               </li>
               <li>
-                <Link to="/profile">Order History</Link>
+                <Link to="/orders">Order History</Link>
               </li>
               <li>
-                <Link to="/profile">Wishlist</Link>
+                <Link to="/wishlist">Wishlist</Link>
               </li>
               <li>
                 <Link to="/profile">Profile</Link>
@@ -198,6 +253,7 @@ export function BuyerShell() {
         <Outlet />
       </main>
       <Footer />
+      <CartDrawer />
     </div>
   );
 }

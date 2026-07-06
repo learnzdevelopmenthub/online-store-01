@@ -21,6 +21,9 @@ process.env.ADMIN_PASSWORD = 'admin-test-password';
 process.env.CORS_ORIGIN = 'http://localhost:5173';
 // Real connection comes from the in-memory server below; this just satisfies validation.
 process.env.MONGODB_URI = 'mongodb://localhost:27017/online-store-01-test';
+process.env.RAZORPAY_KEY_ID = 'rzp_test_key_id';
+process.env.RAZORPAY_KEY_SECRET = 'rzp_test_key_secret';
+process.env.RAZORPAY_WEBHOOK_SECRET = 'test_webhook_secret';
 
 let mongo: MongoMemoryServer;
 
