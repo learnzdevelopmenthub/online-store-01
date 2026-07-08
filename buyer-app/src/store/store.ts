@@ -4,7 +4,9 @@ import { setOnRefreshed, setOnRefreshFailed } from '../lib/axios.ts';
 import { setAccessToken as setModuleToken } from '../lib/tokenManager.ts';
 import { authApi } from './api/authApi.ts';
 import { booksApi } from './api/booksApi.ts';
+import { libraryApi } from './api/libraryApi.ts';
 import { ordersApi } from './api/ordersApi.ts';
+import { reviewsApi } from './api/reviewsApi.ts';
 import { wishlistApi } from './api/wishlistApi.ts';
 import authReducer, { clearCredentials, setAccessToken } from './slices/authSlice.ts';
 import cartReducer from './slices/cartSlice.ts';
@@ -17,6 +19,8 @@ export const store = configureStore({
     [booksApi.reducerPath]: booksApi.reducer,
     [wishlistApi.reducerPath]: wishlistApi.reducer,
     [ordersApi.reducerPath]: ordersApi.reducer,
+    [libraryApi.reducerPath]: libraryApi.reducer,
+    [reviewsApi.reducerPath]: reviewsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -24,6 +28,8 @@ export const store = configureStore({
       booksApi.middleware,
       wishlistApi.middleware,
       ordersApi.middleware,
+      libraryApi.middleware,
+      reviewsApi.middleware,
     ),
 });
 

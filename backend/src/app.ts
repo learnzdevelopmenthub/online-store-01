@@ -9,7 +9,9 @@ import { errorMiddleware } from './middleware/error.middleware.js';
 import { adminRouter } from './routes/admin.routes.js';
 import { authRouter } from './routes/auth.routes.js';
 import { booksRouter } from './routes/books.routes.js';
+import { libraryRouter } from './routes/library.routes.js';
 import { ordersRouter } from './routes/orders.routes.js';
+import { reviewsRouter } from './routes/reviews.routes.js';
 import { usersRouter } from './routes/users.routes.js';
 import { wishlistRouter } from './routes/wishlist.routes.js';
 
@@ -48,6 +50,8 @@ export function createApp(): Express {
   app.use('/api/users', usersRouter);
   app.use('/api/wishlist', wishlistRouter);
   app.use('/api/orders', ordersRouter);
+  app.use('/api/library', libraryRouter);
+  app.use('/api/reviews', reviewsRouter);
 
   // Error handler must be registered last.
   app.use(errorMiddleware);

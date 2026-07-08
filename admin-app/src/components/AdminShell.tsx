@@ -1,4 +1,4 @@
-import { BookOpen, LayoutDashboard, LogOut } from 'lucide-react';
+import { BookOpen, Flag, LayoutDashboard, LogOut } from 'lucide-react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 import { useLogoutMutation } from '../store/api/authApi.ts';
@@ -38,6 +38,10 @@ export function AdminShell() {
               <NavLink to="/books">
                 <BookOpen size={16} />
                 Books
+              </NavLink>
+              <NavLink to="/reviews">
+                <Flag size={16} />
+                Reviews
               </NavLink>
             </div>
 

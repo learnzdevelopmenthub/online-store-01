@@ -9,6 +9,7 @@ import {
   publishBook,
   updateBook,
 } from '../controllers/books.controller.js';
+import { listFlaggedReviews, moderateReview } from '../controllers/reviews.controller.js';
 import { requireAdmin } from '../middleware/admin.middleware.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import { bookUpload } from '../middleware/upload.middleware.js';
@@ -40,3 +41,7 @@ adminRouter.patch(
 adminRouter.delete('/books/:id', deleteBook);
 adminRouter.patch('/books/:id/publish', publishBook);
 adminRouter.post('/books/bulk', bulkBooks);
+
+// Review moderation (M10)
+adminRouter.get('/reviews/flagged', listFlaggedReviews);
+adminRouter.patch('/reviews/:reviewId', moderateReview);

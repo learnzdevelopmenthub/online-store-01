@@ -4,6 +4,7 @@ import { setOnRefreshed, setOnRefreshFailed } from '../lib/axios.ts';
 import { setAccessToken as setModuleToken } from '../lib/tokenManager.ts';
 import { authApi } from './api/authApi.ts';
 import { booksApi } from './api/booksApi.ts';
+import { reviewsApi } from './api/reviewsApi.ts';
 import authReducer, { clearCredentials, setAccessToken } from './slices/authSlice.ts';
 
 export const store = configureStore({
@@ -11,9 +12,10 @@ export const store = configureStore({
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
     [booksApi.reducerPath]: booksApi.reducer,
+    [reviewsApi.reducerPath]: reviewsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware, reviewsApi.middleware),
 });
 
 store.subscribe(() => {
