@@ -4,7 +4,9 @@ import { isValidObjectId } from 'mongoose';
 import { env } from '../config/env.js';
 import { Book } from '../models/Book.model.js';
 import { Order } from '../models/Order.model.js';
+import { User } from '../models/User.model.js';
 import { createOrderSchema } from '../schemas/orders.schema.js';
+import { sendOrderConfirmation } from '../services/email.service.js';
 import { createRazorpayOrder, verifyWebhookSignature } from '../services/razorpay.service.js';
 import { AppError } from '../utils/AppError.js';
 
@@ -120,6 +122,25 @@ export const webhookHandler: RequestHandler = async (req, res) => {
   order.status = 'paid';
   order.razorpayPaymentId = paymentId ?? null;
   await order.save();
+
+  const [buyer, books] = await Promise.all([
+    User.findById(order.buyer).select('fullName email'),
+    Book.find({ _id: { $in: order.books.map((line) => line.book) } }).select('title'),
+  ]);
+
+  if (buyer) {
+    const booksById = new Map(books.map((book) => [book._id.toString(), book]));
+    const emailBooks = order.books
+      .map((line) => {
+        const book = booksById.get(line.book.toString());
+        return book ? { title: book.title, price: line.price } : null;
+      })
+      .filter((book): book is { title: string; price: number } => book !== null);
+
+    void sendOrderConfirmation(buyer, order.toObject(), emailBooks).catch((error) => {
+      console.error('orders: failed to send confirmation email', error);
+    });
+  }
 
   res.status(200).json({ received: true });
 };

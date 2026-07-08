@@ -47,6 +47,15 @@ const envSchema = z.object({
   R2_PUBLIC_BUCKET: z.string().default('books-public'),
   R2_PRIVATE_BUCKET: z.string().default('books-private'),
   R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+
+  // Buyer app URL used in transactional email links.
+  BUYER_APP_URL: z.preprocess(emptyToUndefined, z.string().url().default('http://localhost:3000')),
+
+  // Email via Nodemailer SMTP. The service validates required credentials at send time.
+  SMTP_HOST: z.preprocess(emptyToUndefined, z.string().optional()),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_USER: z.preprocess(emptyToUndefined, z.string().optional()),
+  SMTP_PASS: z.preprocess(emptyToUndefined, z.string().optional()),
 });
 
 const parsed = envSchema.safeParse(process.env);

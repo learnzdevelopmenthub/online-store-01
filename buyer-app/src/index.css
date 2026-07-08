@@ -919,6 +919,44 @@ hr {
   margin-bottom: var(--sp-4);
 }
 
+.support-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+.support-form {
+  display: grid;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+}
+
+.support-side {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.faq-list {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.faq-item {
+  padding: 0;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  color: var(--text-heading);
+  font-weight: 700;
+  padding: var(--sp-5);
+}
+
+.faq-item p {
+  padding: 0 var(--sp-5) var(--sp-5);
+}
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 1024px) {
   .card-grid {
@@ -939,6 +977,9 @@ hr {
   }
   .footer-inner {
     grid-template-columns: 1fr 1fr;
+  }
+  .support-layout {
+    grid-template-columns: 1fr;
   }
 }
 

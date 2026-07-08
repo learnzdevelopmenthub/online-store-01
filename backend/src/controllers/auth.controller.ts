@@ -68,7 +68,7 @@ export const login: RequestHandler = async (req, res) => {
   }
 
   if (!user.isActive) {
-    throw new AppError(403, 'Account suspended');
+    throw new AppError(403, 'Your account has been suspended. Contact support.');
   }
 
   const accessToken = await issueSession(user, res);
@@ -99,7 +99,7 @@ export const refresh: RequestHandler = async (req, res) => {
   }
 
   if (!user.isActive) {
-    throw new AppError(403, 'Account suspended');
+    throw new AppError(403, 'Your account has been suspended. Contact support.');
   }
 
   // Rotation: issueSession overwrites the stored hash + sets a new cookie.

@@ -71,7 +71,7 @@ export function Navbar() {
               Orders
             </NavLink>
           )}
-          <NavLink to="/search" onClick={() => setOpen(false)}>
+          <NavLink to="/faq" onClick={() => setOpen(false)}>
             Help
           </NavLink>
         </div>
@@ -229,10 +229,10 @@ export function Footer() {
             <div className="footer-heading">Support</div>
             <ul className="footer-links">
               <li>
-                <Link to="/search">Contact Us</Link>
+                <Link to="/contact">Contact Us</Link>
               </li>
               <li>
-                <Link to="/search">FAQ</Link>
+                <Link to="/faq">FAQ</Link>
               </li>
             </ul>
           </div>

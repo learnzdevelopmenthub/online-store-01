@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../../src/app.js';
 import { Book } from '../../src/models/Book.model.js';
 import { Order } from '../../src/models/Order.model.js';
+import { User } from '../../src/models/User.model.js';
 import { signAccessToken } from '../../src/utils/jwt.util.js';
 
 vi.mock('../../src/services/razorpay.service.js', () => ({
@@ -17,7 +18,13 @@ vi.mock('../../src/services/razorpay.service.js', () => ({
   createRefund: vi.fn(async () => ({ id: 'ref_test_123' })),
 }));
 
+vi.mock('../../src/services/email.service.js', () => ({
+  sendOrderConfirmation: vi.fn(async () => undefined),
+  sendContactMessage: vi.fn(async () => undefined),
+}));
+
 import * as razorpayService from '../../src/services/razorpay.service.js';
+import * as emailService from '../../src/services/email.service.js';
 
 const app = createApp();
 
@@ -158,6 +165,12 @@ describe('POST /api/orders/webhook', () => {
   });
 
   it('updates order to paid on valid payment.captured event', async () => {
+    await User.create({
+      _id: buyerId,
+      fullName: 'Buyer One',
+      email: 'buyer@test.local',
+      role: 'buyer',
+    });
     const book = await seedBook();
     await Order.create({
       buyer: buyerId,
@@ -179,6 +192,36 @@ describe('POST /api/orders/webhook', () => {
     const updated = await Order.findOne({ razorpayOrderId: 'rzp_order_pending_456' });
     expect(updated?.status).toBe('paid');
     expect(updated?.razorpayPaymentId).toBe('pay_test_123');
+    expect(emailService.sendOrderConfirmation).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns 200 when confirmation email sending fails', async () => {
+    vi.mocked(emailService.sendOrderConfirmation).mockRejectedValueOnce(new Error('smtp down'));
+    await User.create({
+      _id: buyerId,
+      fullName: 'Buyer One',
+      email: 'buyer@test.local',
+      role: 'buyer',
+    });
+    const book = await seedBook();
+    await Order.create({
+      buyer: buyerId,
+      books: [{ book: book._id, price: book.price }],
+      totalAmount: book.price,
+      razorpayOrderId: 'rzp_order_email_failure',
+      status: 'pending',
+    });
+
+    const res = await request(app)
+      .post('/api/orders/webhook')
+      .set('X-Razorpay-Signature', 'valid_sig')
+      .send(webhookBody('rzp_order_email_failure'));
+
+    expect(res.status).toBe(200);
+    expect(res.body.received).toBe(true);
+
+    const order = await Order.findOne({ razorpayOrderId: 'rzp_order_email_failure' });
+    expect(order?.status).toBe('paid');
   });
 
   it('is idempotent — duplicate webhook returns 200 without changing paid order', async () => {
@@ -225,9 +268,7 @@ describe('POST /api/orders/webhook', () => {
     });
 
     const body = webhookBody('rzp_order_public_test');
-    const res = await request(app)
-      .post('/api/orders/webhook')
-      .send(body); // No Authorization header — should still work
+    const res = await request(app).post('/api/orders/webhook').send(body); // No Authorization header — should still work
 
     expect(res.status).not.toBe(401);
   });
@@ -240,9 +281,7 @@ describe('GET /api/orders', () => {
   });
 
   it('returns empty list for user with no orders', async () => {
-    const res = await request(app)
-      .get('/api/orders')
-      .set('Authorization', `Bearer ${token()}`);
+    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token()}`);
     expect(res.status).toBe(200);
     expect(res.body.orders).toEqual([]);
     expect(res.body.pagination.total).toBe(0);
@@ -258,9 +297,7 @@ describe('GET /api/orders', () => {
       status: 'paid',
     });
 
-    const res = await request(app)
-      .get('/api/orders')
-      .set('Authorization', `Bearer ${token()}`);
+    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token()}`);
 
     expect(res.status).toBe(200);
     expect(res.body.orders).toHaveLength(1);
@@ -287,9 +324,7 @@ describe('GET /api/orders', () => {
       status: 'paid',
     });
 
-    const res = await request(app)
-      .get('/api/orders')
-      .set('Authorization', `Bearer ${token()}`);
+    const res = await request(app).get('/api/orders').set('Authorization', `Bearer ${token()}`);
 
     expect(res.status).toBe(200);
     expect(res.body.orders).toHaveLength(1);
