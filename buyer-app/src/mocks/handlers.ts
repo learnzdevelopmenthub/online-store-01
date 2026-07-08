@@ -38,4 +38,8 @@ export const handlers = [
   http.get(`${API}/api/books/:id`, () =>
     HttpResponse.json({ book: books[0], relatedBooks: books }),
   ),
+  http.get(`${API}/api/library`, () => HttpResponse.json({ books: [] })),
+  http.get(`${API}/api/reviews/:bookId`, () =>
+    HttpResponse.json({ reviews: [], averageRating: 0, reviewCount: 0 }),
+  ),
 ];

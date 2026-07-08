@@ -11,6 +11,7 @@ import BookFormPage from './pages/BookForm.tsx';
 import BooksPage from './pages/Books.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Login from './pages/Login.tsx';
+import ReviewsPage from './pages/Reviews.tsx';
 import { useLazyGetMeQuery } from './store/api/authApi.ts';
 import { useAppDispatch } from './store/hooks.ts';
 import { clearCredentials, setCredentials } from './store/slices/authSlice.ts';
@@ -54,6 +55,7 @@ function AppRoutes() {
           <Route path="/books" element={<BooksPage />} />
           <Route path="/books/new" element={<BookFormPage />} />
           <Route path="/books/:id/edit" element={<BookFormPage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

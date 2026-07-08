@@ -11,6 +11,7 @@ import BookDetailPage from './pages/BookDetail.tsx';
 import CategoryPage from './pages/Category.tsx';
 import CheckoutPage from './pages/Checkout.tsx';
 import Home from './pages/Home.tsx';
+import LibraryPage from './pages/Library.tsx';
 import Login from './pages/Login.tsx';
 import OrderHistoryPage from './pages/OrderHistory.tsx';
 import Profile from './pages/Profile.tsx';
@@ -57,6 +58,7 @@ function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/library" element={<LibraryPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrderHistoryPage />} />

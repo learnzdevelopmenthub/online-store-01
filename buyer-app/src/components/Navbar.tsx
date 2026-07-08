@@ -61,9 +61,11 @@ export function Navbar() {
               Wishlist
             </NavLink>
           )}
-          <NavLink to="/profile" onClick={() => setOpen(false)}>
-            My Library
-          </NavLink>
+          {user && (
+            <NavLink to="/library" onClick={() => setOpen(false)}>
+              My Library
+            </NavLink>
+          )}
           {user && (
             <NavLink to="/orders" onClick={() => setOpen(false)}>
               Orders
@@ -210,7 +212,7 @@ export function Footer() {
             <div className="footer-heading">Account</div>
             <ul className="footer-links">
               <li>
-                <Link to="/profile">My Library</Link>
+                <Link to="/library">My Library</Link>
               </li>
               <li>
                 <Link to="/orders">Order History</Link>
