@@ -24,6 +24,11 @@ process.env.MONGODB_URI = 'mongodb://localhost:27017/online-store-01-test';
 process.env.RAZORPAY_KEY_ID = 'rzp_test_key_id';
 process.env.RAZORPAY_KEY_SECRET = 'rzp_test_key_secret';
 process.env.RAZORPAY_WEBHOOK_SECRET = 'test_webhook_secret';
+process.env.BUYER_APP_URL = 'http://localhost:3000';
+process.env.SMTP_HOST = 'smtp.test.local';
+process.env.SMTP_PORT = '587';
+process.env.SMTP_USER = 'user';
+process.env.SMTP_PASS = 'pass';
 
 let mongo: MongoMemoryServer;
 

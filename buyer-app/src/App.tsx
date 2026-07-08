@@ -10,6 +10,8 @@ import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
 import BookDetailPage from './pages/BookDetail.tsx';
 import CategoryPage from './pages/Category.tsx';
 import CheckoutPage from './pages/Checkout.tsx';
+import ContactPage from './pages/Contact.tsx';
+import FAQPage from './pages/FAQ.tsx';
 import Home from './pages/Home.tsx';
 import LibraryPage from './pages/Library.tsx';
 import Login from './pages/Login.tsx';
@@ -54,6 +56,8 @@ function AppRoutes() {
         <Route path="/books/:id" element={<BookDetailPage />} />
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>

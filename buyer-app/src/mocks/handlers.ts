@@ -42,4 +42,5 @@ export const handlers = [
   http.get(`${API}/api/reviews/:bookId`, () =>
     HttpResponse.json({ reviews: [], averageRating: 0, reviewCount: 0 }),
   ),
+  http.post(`${API}/api/contact`, () => HttpResponse.json({ message: 'Message sent' })),
 ];

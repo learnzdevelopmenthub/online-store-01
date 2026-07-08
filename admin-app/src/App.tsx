@@ -9,9 +9,14 @@ import api from './lib/axios.ts';
 import { setAccessToken as setModuleToken } from './lib/tokenManager.ts';
 import BookFormPage from './pages/BookForm.tsx';
 import BooksPage from './pages/Books.tsx';
+import CustomerDetailPage from './pages/CustomerDetail.tsx';
+import CustomersPage from './pages/Customers.tsx';
 import Dashboard from './pages/Dashboard.tsx';
 import Login from './pages/Login.tsx';
+import OrderDetailPage from './pages/OrderDetail.tsx';
+import OrdersPage from './pages/Orders.tsx';
 import ReviewsPage from './pages/Reviews.tsx';
+import SettingsPage from './pages/Settings.tsx';
 import { useLazyGetMeQuery } from './store/api/authApi.ts';
 import { useAppDispatch } from './store/hooks.ts';
 import { clearCredentials, setCredentials } from './store/slices/authSlice.ts';
@@ -55,7 +60,12 @@ function AppRoutes() {
           <Route path="/books" element={<BooksPage />} />
           <Route path="/books/new" element={<BookFormPage />} />
           <Route path="/books/:id/edit" element={<BookFormPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/customers/:id" element={<CustomerDetailPage />} />
           <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

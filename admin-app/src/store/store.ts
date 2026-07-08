@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import { setOnRefreshed, setOnRefreshFailed } from '../lib/axios.ts';
 import { setAccessToken as setModuleToken } from '../lib/tokenManager.ts';
+import { adminApi } from './api/adminApi.ts';
 import { authApi } from './api/authApi.ts';
 import { booksApi } from './api/booksApi.ts';
 import { reviewsApi } from './api/reviewsApi.ts';
@@ -10,12 +11,18 @@ import authReducer, { clearCredentials, setAccessToken } from './slices/authSlic
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    [adminApi.reducerPath]: adminApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [booksApi.reducerPath]: booksApi.reducer,
     [reviewsApi.reducerPath]: reviewsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, booksApi.middleware, reviewsApi.middleware),
+    getDefaultMiddleware().concat(
+      adminApi.middleware,
+      authApi.middleware,
+      booksApi.middleware,
+      reviewsApi.middleware,
+    ),
 });
 
 store.subscribe(() => {
